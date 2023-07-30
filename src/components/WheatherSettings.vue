@@ -2,16 +2,16 @@
   <div class="weather__settings settings">
     <div class="settings__head">
       <h2 class="settings__title">Settings</h2>
-      <div class="settings__close-icon close-icon"><span class="close-icon__left"></span><span class="close-icon__right"></span></div>
+      <div class="settings__close-icon close-icon" @click="$emit('clickCloseSettings')"><span class="close-icon__left"></span><span class="close-icon__right"></span></div>
     </div>
     <div class="setting__body">
       <div class="settings__elements-list" dropzone="true">
-        <div class="settings__element element" draggable="true">
+        <!-- <div class="settings__element element" draggable="true">
           <div class="element__burger burger"><span class="burger__line line_top"></span><span class="burger__line line_middle"></span><span class="burger__line line_bottom"></span></div>
           <div class="element__title">London UK</div>
           <div class="element__delete"></div>
-        </div>
-        <div class="settings__element element" v-for="city in cities" :key="city.cityName">
+        </div> -->
+        <div class="settings__element element" v-for="city in cities" :key="city.cityName" draggable="true">
           <div class="element__burger burger"><span class="burger__line line_top"></span><span class="burger__line line_middle"></span><span class="burger__line line_bottom"></span></div>
           <div class="element__title">{{ city.cityName }} {{ city.country }}</div>
           <div class="element__delete"></div>

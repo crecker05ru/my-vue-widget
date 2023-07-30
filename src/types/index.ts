@@ -30,8 +30,8 @@ interface IMain {
   humidity: number
 }
 interface IWind {
-  deg: number
-  gust: number
+  deg?: number
+  gust?: number
   speed: number
 }
 
@@ -48,7 +48,7 @@ interface IWeatherListItem {
   wind: IWind
 }
 
-export interface IWeatherResponse {
+export interface IWeatherGeoResponse {
   city: IWeatherCity
   cnt: number
   cod: string
@@ -62,13 +62,13 @@ interface ISys {
   sunrise: number
   sunset: number
 }
-export interface IWheatherData {
+export interface IWeatherData {
   coord: {}
   weather: IWeather[]
   base: string
   main: IMain
   visibility: number
-  wind: {}
+  wind: IWind
   clouds: {}
   dt: number
   sys: ISys
@@ -78,6 +78,21 @@ export interface IWheatherData {
   cod: number
 }
 
+export interface IWeatherCityResponse {
+  base: string
+  clouds: {}
+  cod: number
+  coord: {}
+  dt: number
+  id: number
+  main: IMain
+  name: string
+  sys: ISys
+  timezone: number
+  visibility: number
+  weather: IWeather[]
+  wind: IWind
+}
 export interface ICity {
   cityName: string
   country: string
