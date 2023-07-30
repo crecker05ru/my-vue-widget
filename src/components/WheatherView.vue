@@ -5,7 +5,11 @@
         <span class="weather__city">{{ weatherData.cityName }} </span>
         <span class="weather__country"> {{ weatherData.country }}</span>
       </h2>
-      <div class="weather__settings-icon" @click="$emit('clickSettings')" v-if="isMain"></div>
+      <div
+        class="weather__settings-icon"
+        @click="$emit('clickSettings')"
+        v-if="isMain"
+      ></div>
     </div>
     <div class="weather__visuals">
       <div class="weather__icon">{{ weatherData.icon }}</div>
@@ -44,114 +48,74 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref, computed } from "vue";
-import { getWeatherByCity, getWeatherByGeoposition } from "../api/api";
-import { IWeatherGeoResponse, IWeatherCityResponse, ICity } from "../types";
+import { onMounted, computed } from "vue";
+import { IWeatherGeoResponse, IWeatherCityResponse } from "../types";
 
-const props = defineProps<{ city: ICity; isMain: boolean }>();
-const geoCoordinates = reactive({
-  lat: 51.5085,
-  lon: -0.1257,
-});
+const props = defineProps<{
+  weatherDataResponse: IWeatherCityResponse & IWeatherGeoResponse;
+  isMain: boolean;
+}>();
 
-const weatherDataResponse = ref<IWeatherGeoResponse & IWeatherCityResponse>();
 const weatherDescription = computed(() => {
-  if (weatherDataResponse.value && weatherDataResponse.value.list) {
-    return `Feels like ${weatherDataResponse.value.list[0].main.feels_like.toFixed()}C.
+  if (props.weatherDataResponse && props.weatherDataResponse.list) {
+    return `Feels like ${props.weatherDataResponse.list[0].main.feels_like.toFixed()}C.
     ${
-      weatherDataResponse.value.list[0].weather[0].description[0].toUpperCase() +
-      weatherDataResponse.value.list[0].weather[0].description.slice(1)
+      props.weatherDataResponse.list[0].weather[0].description[0].toUpperCase() +
+      props.weatherDataResponse.list[0].weather[0].description.slice(1)
     }`;
-  } 
-  if(weatherDataResponse.value && weatherDataResponse.value.weather[0]){
-    return `Feels like ${weatherDataResponse.value.main.feels_like.toFixed()}C.
+  }
+  if (props.weatherDataResponse && props.weatherDataResponse.weather[0]) {
+    return `Feels like ${props.weatherDataResponse.main.feels_like.toFixed()}C.
     ${
-      weatherDataResponse.value.weather[0].description[0].toUpperCase() +
-      weatherDataResponse.value.weather[0].description.slice(1)
+      props.weatherDataResponse.weather[0].description[0].toUpperCase() +
+      props.weatherDataResponse.weather[0].description.slice(1)
     }`;
   }
   return ``;
 });
 
-// interface IWheatherData {
-//   cityName: string
-//   description: string
-// }
-
-// const weatherData = reactive({
-//   cityName: weatherDataResponse.value.city.name,
-//   country: weatherDataResponse.value.city.country,
-//   icon: weatherDataResponse.value.list[0].weather[0].icon,
-//   temperature: weatherDataResponse.list[0].main.temp,
-//   description: weatherDescription.value,
-//   windSpeed: weatherDataResponse.value.list[0].wind.speed,
-//   pressure: weatherDataResponse.value.list[0].main.pressure,
-//   humidity: weatherDataResponse.value.list[0].main.humidity,
-//   dewPoint: (weatherDataResponse.value.list[0].main.temp *  (weatherDataResponse.value.list[0].main.humidity / 100)).toFixed(),
-//   visibility: (weatherDataResponse.value.list[0].visibility / 1000).toFixed(1)
-// })
-
 const weatherData = computed(() => {
-  if (weatherDataResponse.value) {
+  if (props.weatherDataResponse) {
     return {
-      cityName: weatherDataResponse.value.name || weatherDataResponse.value.city.name,
-      country: weatherDataResponse.value.sys.country || weatherDataResponse.value.city.country,
-      icon: weatherDataResponse.value.weather[0].icon || weatherDataResponse.value.list[0].weather[0].icon,
-      temperature: weatherDataResponse.value.main.temp || weatherDataResponse.value.list[0].main.temp,
-      description: weatherDescription.value,
-      windSpeed: weatherDataResponse.value.wind.speed || weatherDataResponse.value.list[0].wind.speed,
-      pressure: weatherDataResponse.value.main.pressure || weatherDataResponse.value.list[0].main.pressure,
-      humidity: weatherDataResponse.value.main.humidity || weatherDataResponse.value.list[0].main.humidity,
-      dewPoint:  (
-        weatherDataResponse.value.main.temp *
-        (weatherDataResponse.value.main.humidity / 100)
-      ).toFixed() || (
-        weatherDataResponse.value.list[0].main.temp *
-        (weatherDataResponse.value.list[0].main.humidity / 100)
-      ).toFixed(),
-      visibility: (weatherDataResponse.value.visibility / 1000).toFixed(
-        1
-      ) || (weatherDataResponse.value.list[0].visibility / 1000).toFixed(
-        1
-      ),
+      cityName:
+        props.weatherDataResponse.name || props.weatherDataResponse.city.name,
+      country:
+        props.weatherDataResponse.sys.country ||
+        props.weatherDataResponse.city.country,
+      icon:
+        props.weatherDataResponse.weather[0].icon ||
+        props.weatherDataResponse.list[0].weather[0].icon,
+      temperature:
+        props.weatherDataResponse.main.temp ||
+        props.weatherDataResponse.list[0].main.temp,
+      description: weatherDescription,
+      windSpeed:
+        props.weatherDataResponse.wind.speed ||
+        props.weatherDataResponse.list[0].wind.speed,
+      pressure:
+        props.weatherDataResponse.main.pressure ||
+        props.weatherDataResponse.list[0].main.pressure,
+      humidity:
+        props.weatherDataResponse.main.humidity ||
+        props.weatherDataResponse.list[0].main.humidity,
+      dewPoint:
+        (
+          props.weatherDataResponse.main.temp *
+          (props.weatherDataResponse.main.humidity / 100)
+        ).toFixed() ||
+        (
+          props.weatherDataResponse.list[0].main.temp *
+          (props.weatherDataResponse.list[0].main.humidity / 100)
+        ).toFixed(),
+      visibility:
+        (props.weatherDataResponse.visibility / 1000).toFixed(1) ||
+        (props.weatherDataResponse.list[0].visibility / 1000).toFixed(1),
     };
   }
 });
+
 onMounted(() => {
-  console.log("Mounted");
-  navigator.geolocation.getCurrentPosition((positions) => {
-    if (positions) {
-      (geoCoordinates.lat = positions.coords.latitude),
-        (geoCoordinates.lon = positions.coords.longitude);
-    }
-  });
-  // (async () => {
-  //   weatherDataResponse.value = (await getWeatherByGeoposition(
-  //     geoCoordinates
-  //   )) as IWeatherResponse;
-  //   console.log("weatherData.value", weatherDataResponse.value);
-  // })();
-
-  if(props.city.cityName){
-    (async () => {
-    weatherDataResponse.value = (await getWeatherByCity(
-      props.city.cityName.split(" ")[0]
-    ));
-    console.log("weatherData.value", weatherDataResponse.value);
-  })();
-  } else {
-    (async () => {
-    weatherDataResponse.value = (await getWeatherByGeoposition(
-      geoCoordinates
-    ));
-    console.log("weatherData.value", weatherDataResponse.value);
-  })();
-  }
-
-  // weatherData.value = getWeatherByGeoposition(geoCoordinates)
-  // getWeatherByGeoposition(geoCoordinates).then(data => {
-  //   weatherData.value = data
-  // })
+  console.log("props.weatherDataResponse", props.weatherDataResponse);
 });
 </script>
 <style scoped lang="scss">
