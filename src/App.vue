@@ -91,12 +91,8 @@ watchEffect(async () => {
 </script>
 <style scoped lang="scss">
 .main {
-  flex: 1 1 auto;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 1) 1%,
-    rgba(0, 185, 255, 1) 53%
-  );
+  position: absolute;
+  z-index: 999;
 }
 .weather {
   background-color: rgba(255, 255, 255, 0.3);

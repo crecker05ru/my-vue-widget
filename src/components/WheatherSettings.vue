@@ -156,6 +156,7 @@ watchEffect(async () => {
     outline: none;
     padding: 4px;
     border: 1px solid transparent;
+    background-color: #f7f7f7;
     &:focus {
       border: 1px solid #0051ff;
     }
