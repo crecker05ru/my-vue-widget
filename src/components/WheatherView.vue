@@ -12,7 +12,8 @@
       ></div>
     </div>
     <div class="weather__visuals">
-      <div class="weather__icon">{{ weatherData.icon }}</div>
+      <div class="weather__icon" 
+      :style="{ backgroundImage: weatherData.icon }"></div>
       <div class="weather__temperature">
         {{ weatherData.temperature }}&#8451;
       </div>
@@ -83,14 +84,14 @@ const weatherData = computed(() => {
         props.weatherDataResponse.sys.country ||
         props.weatherDataResponse.city.country,
       icon:
-        props.weatherDataResponse.weather[0].icon ||
-        props.weatherDataResponse.list[0].weather[0].icon,
+        `url("src/assets/weather-icons/${props.weatherDataResponse.weather[0].icon}.png")`||
+        `url("src/assets/weather-icons/${props.weatherDataResponse.list[0].weather[0].icon}.png")`,
       temperature:
         props.weatherDataResponse.main.temp ||
         props.weatherDataResponse.list[0].main.temp,
       description: weatherDescription,
       windSpeed:
-        props.weatherDataResponse.wind.speed ||
+        String(props.weatherDataResponse.wind.speed) ||
         props.weatherDataResponse.list[0].wind.speed,
       pressure:
         props.weatherDataResponse.main.pressure ||
@@ -111,7 +112,7 @@ const weatherData = computed(() => {
         (props.weatherDataResponse.visibility / 1000).toFixed(1) ||
         (props.weatherDataResponse.list[0].visibility / 1000).toFixed(1),
     };
-  }
+  }return null
 });
 
 onMounted(() => {
@@ -147,11 +148,15 @@ onMounted(() => {
   }
   &__visuals {
     display: flex;
+    align-items: center;
     column-gap: 10px;
     margin-bottom: 20px;
   }
   &__icon {
-    font-size: 28px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 50px;
+    width: 50px;
   }
   &__temperature {
     font-size: 28px;

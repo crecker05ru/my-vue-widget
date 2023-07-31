@@ -23,7 +23,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, watchEffect } from "vue";
 import WheatherView from "./components/WheatherView.vue";
 import WheatherSettings from "./components/WheatherSettings.vue";
-import { ICity } from "./types";
+import { ICity, IWeatherGeoResponse } from "./types";
 import { getWeatherByCity, getWeatherByGeoposition } from "./api/api";
 const isSettingsOpened = ref(false);
 const geoCoordinates = reactive({
@@ -55,10 +55,15 @@ onMounted(async () => {
     cities.value = JSON.parse(data);
     console.log("cities.value", cities.value);
 
-    console.log("weatherDatas.value", weatherDatas.value);
+  console.log("weatherDatas.value", weatherDatas.value);
   } else {
-    const city = await getWeatherByGeoposition(geoCoordinates);
+    const city = await getWeatherByGeoposition(geoCoordinates) as IWeatherGeoResponse;
     console.log(city);
+    cities.value.push({cityName: city.city.name,country: city.city.country})
+    weatherDatas.value.push(city)
+    if(!city){
+      cities.value.push({cityName: "London",country: "GB"})
+    }
   }
 });
 
@@ -73,6 +78,8 @@ watchEffect(async () => {
       return weather;
     })
   );
+  console.log("weatherDatas.value", weatherDatas.value);
+
 });
 </script>
 <style scoped lang="scss">
