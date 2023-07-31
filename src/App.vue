@@ -15,12 +15,13 @@
         @clickCloseSettings="isSettingsOpened = false"
         @clickDelete="deleteCity"
         @clickAdd="addCity"
+        @dragEnd="dargEnd"
       />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount, watchEffect } from "vue";
+import { ref, reactive, onMounted, watchEffect } from "vue";
 import WheatherView from "./components/WheatherView.vue";
 import WheatherSettings from "./components/WheatherSettings.vue";
 import { ICity, IWeatherGeoResponse } from "./types";
@@ -47,28 +48,24 @@ const addCity = (name: string) => {
 const deleteCity = (name: string) => {
   cities.value = cities.value.filter((city) => city.cityName !== name);
 };
+
+const dargEnd = (citiesArr: ICity[]) => {
+  cities.value = citiesArr;
+};
 onMounted(async () => {
-  console.log("onMount cities.value", cities.value);
   const data = localStorage.getItem("data");
-  console.log("data", data);
   if (data) {
     cities.value = JSON.parse(data);
-    console.log("cities.value", cities.value);
-
-  console.log("weatherDatas.value", weatherDatas.value);
   } else {
-    const city = await getWeatherByGeoposition(geoCoordinates) as IWeatherGeoResponse;
-    console.log(city);
-    cities.value.push({cityName: city.city.name,country: city.city.country})
-    weatherDatas.value.push(city)
-    if(!city){
-      cities.value.push({cityName: "London",country: "GB"})
+    const city = (await getWeatherByGeoposition(
+      geoCoordinates
+    )) as IWeatherGeoResponse;
+    cities.value.push({ cityName: city.city.name, country: city.city.country });
+    weatherDatas.value.push(city);
+    if (!city) {
+      cities.value.push({ cityName: "London", country: "GB" });
     }
   }
-});
-
-onBeforeUnmount(() => {
-  console.log("Before unmount");
 });
 
 watchEffect(async () => {
@@ -78,8 +75,7 @@ watchEffect(async () => {
       return weather;
     })
   );
-  console.log("weatherDatas.value", weatherDatas.value);
-
+  localStorage.setItem("data", JSON.stringify(cities.value));
 });
 </script>
 <style scoped lang="scss">

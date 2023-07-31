@@ -12,8 +12,10 @@
       ></div>
     </div>
     <div class="weather__visuals">
-      <div class="weather__icon" 
-      :style="{ backgroundImage: weatherData.icon }"></div>
+      <div
+        class="weather__icon"
+        :style="{ backgroundImage: weatherData.icon }"
+      ></div>
       <div class="weather__temperature">
         {{ weatherData.temperature }}&#8451;
       </div>
@@ -49,7 +51,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { computed } from "vue";
 import { IWeatherGeoResponse, IWeatherCityResponse } from "../types";
 
 const props = defineProps<{
@@ -84,7 +86,7 @@ const weatherData = computed(() => {
         props.weatherDataResponse.sys.country ||
         props.weatherDataResponse.city.country,
       icon:
-        `url("src/assets/weather-icons/${props.weatherDataResponse.weather[0].icon}.png")`||
+        `url("src/assets/weather-icons/${props.weatherDataResponse.weather[0].icon}.png")` ||
         `url("src/assets/weather-icons/${props.weatherDataResponse.list[0].weather[0].icon}.png")`,
       temperature:
         props.weatherDataResponse.main.temp ||
@@ -112,11 +114,8 @@ const weatherData = computed(() => {
         (props.weatherDataResponse.visibility / 1000).toFixed(1) ||
         (props.weatherDataResponse.list[0].visibility / 1000).toFixed(1),
     };
-  }return null
-});
-
-onMounted(() => {
-  console.log("props.weatherDataResponse", props.weatherDataResponse);
+  }
+  return null;
 });
 </script>
 <style scoped lang="scss">

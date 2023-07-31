@@ -11,26 +11,30 @@
       </div>
     </div>
     <div class="setting__body">
-      <div class="settings__elements-list" dropzone="true">
-        <div
-          class="settings__element element"
-          v-for="city in cities"
-          :key="city.cityName"
-          draggable="true"
+      <div class="settings__elements-list">
+        <draggable
+          v-model="citiesArr"
+          :animation="200"
+          @change="onDragEnd"
+          item-key="cities"
         >
-          <div class="element__burger burger">
-            <span class="burger__line line_top"></span
-            ><span class="burger__line line_middle"></span
-            ><span class="burger__line line_bottom"></span>
-          </div>
-          <div class="element__title">
-            {{ city.cityName }} {{ city.country }}
-          </div>
-          <div
-            class="element__delete"
-            @click="() => clickDelete(city.cityName)"
-          ></div>
-        </div>
+          <template #item="{ element: citiesArr }">
+            <div class="settings__element element">
+              <div class="element__burger burger">
+                <span class="burger__line line_top"></span
+                ><span class="burger__line line_middle"></span
+                ><span class="burger__line line_bottom"></span>
+              </div>
+              <div class="element__title">
+                {{ citiesArr.cityName }} {{ citiesArr.country }}
+              </div>
+              <div
+                class="element__delete"
+                @click="() => clickDelete(citiesArr.cityName)"
+              ></div>
+            </div>
+          </template>
+        </draggable>
       </div>
       <div class="settings__add-element add-element">
         <div class="add-element__title">Add Location:</div>
@@ -47,13 +51,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onUpdated } from "vue";
+import { ref, watchEffect } from "vue";
 import { ICity } from "../types";
+import draggable from "vuedraggable";
 
 const props = defineProps<{ cities: ICity[] }>();
+const citiesArr = ref([...props.cities]);
 const emit = defineEmits<{
   clickDelete: [name: string];
   clickAdd: [name: string];
+  dragEnd: [citiesArr: ICity[]];
 }>();
 
 const cityInput = ref("");
@@ -61,7 +68,6 @@ const inputElement = ref<HTMLInputElement>();
 const onChange = (e: Event) => {
   const target = e.target as HTMLInputElement;
   cityInput.value = target.value;
-  console.log("cityInput.value", cityInput.value);
 };
 
 const clickAdd = () => {
@@ -73,12 +79,13 @@ const clickAdd = () => {
 const clickDelete = (name: string) => {
   emit("clickDelete", name);
 };
-onUpdated(() => {
-  console.log("Updated");
-  localStorage.setItem("data", JSON.stringify(props.cities));
 
-  if (props.cities.length) {
-  }
+const onDragEnd = () => {
+  emit("dragEnd", citiesArr.value);
+};
+
+watchEffect(async () => {
+  citiesArr.value = [...props.cities];
 });
 </script>
 
