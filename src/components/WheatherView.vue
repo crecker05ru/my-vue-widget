@@ -83,36 +83,36 @@ const weatherData = computed(() => {
       cityName:
         props.weatherDataResponse.name || props.weatherDataResponse.city.name,
       country:
-        props.weatherDataResponse.sys.country ||
+        props.weatherDataResponse.sys?.country ||
         props.weatherDataResponse.city.country,
       icon:
-        `url("src/assets/weather-icons/${props.weatherDataResponse.weather[0].icon}.png")` ||
-        `url("src/assets/weather-icons/${props.weatherDataResponse.list[0].weather[0].icon}.png")`,
+        `url("src/assets/weather-icons/${props.weatherDataResponse.weather?.[0]?.icon}.png")` ||
+        `url("src/assets/weather-icons/${props.weatherDataResponse.list?.[0]?.weather[0].icon}.png")`,
       temperature:
-        props.weatherDataResponse.main.temp ||
-        props.weatherDataResponse.list[0].main.temp,
+        props.weatherDataResponse.main?.temp.toFixed() ||
+        props.weatherDataResponse.list?.[0]?.main.temp.toFixed(),
       description: weatherDescription,
       windSpeed:
-        String(props.weatherDataResponse.wind.speed) ||
-        props.weatherDataResponse.list[0].wind.speed,
+        String(props.weatherDataResponse.wind?.speed) ||
+        props.weatherDataResponse.list?.[0]?.wind.speed,
       pressure:
-        props.weatherDataResponse.main.pressure ||
-        props.weatherDataResponse.list[0].main.pressure,
+        props.weatherDataResponse.main?.pressure ||
+        props.weatherDataResponse.list?.[0]?.main.pressure,
       humidity:
-        props.weatherDataResponse.main.humidity ||
-        props.weatherDataResponse.list[0].main.humidity,
+        props.weatherDataResponse.main?.humidity ||
+        props.weatherDataResponse.list?.[0]?.main.humidity,
       dewPoint:
         (
-          props.weatherDataResponse.main.temp *
-          (props.weatherDataResponse.main.humidity / 100)
+          props.weatherDataResponse.main?.temp *
+          (props.weatherDataResponse.main?.humidity / 100)
         ).toFixed() ||
         (
-          props.weatherDataResponse.list[0].main.temp *
-          (props.weatherDataResponse.list[0].main.humidity / 100)
+          props.weatherDataResponse.list?.[0]?.main.temp *
+          (props.weatherDataResponse.list?.[0]?.main.humidity / 100)
         ).toFixed(),
       visibility:
         (props.weatherDataResponse.visibility / 1000).toFixed(1) ||
-        (props.weatherDataResponse.list[0].visibility / 1000).toFixed(1),
+        (props.weatherDataResponse.list?.[0]?.visibility / 1000).toFixed(1),
     };
   }
   return null;

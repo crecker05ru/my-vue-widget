@@ -54,17 +54,28 @@ const dargEnd = (citiesArr: ICity[]) => {
 };
 onMounted(async () => {
   const data = localStorage.getItem("data");
+
   if (data) {
     cities.value = JSON.parse(data);
-  } else {
-    const city = (await getWeatherByGeoposition(
-      geoCoordinates
-    )) as IWeatherGeoResponse;
-    cities.value.push({ cityName: city.city.name, country: city.city.country });
-    weatherDatas.value.push(city);
-    if (!city) {
-      cities.value.push({ cityName: "London", country: "GB" });
-    }
+  }
+  if (cities.value && cities.value.length < 1) {
+    navigator.geolocation.getCurrentPosition(async (positions) => {
+      if (positions) {
+        (geoCoordinates.lat = positions.coords.latitude),
+          (geoCoordinates.lon = positions.coords.longitude);
+      }
+      const city = (await getWeatherByGeoposition(
+        geoCoordinates
+      )) as IWeatherGeoResponse;
+      cities.value.push({
+        cityName: city.city.name,
+        country: city.city.country,
+      });
+      weatherDatas.value.push(city);
+      if (!city) {
+        cities.value.push({ cityName: "London", country: "GB" });
+      }
+    });
   }
 });
 
