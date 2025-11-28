@@ -5,37 +5,28 @@
         <span class="weather__city">{{ weatherData.cityName }} </span>
         <span class="weather__country"> {{ weatherData.country }}</span>
       </h2>
-      <div
-        class="weather__settings-icon"
+      <button
+        class="weather__settings-button"
         @click="$emit('clickSettings')"
         v-if="isMain"
-      ></div>
+      ></button>
     </div>
     <div class="weather__visuals">
-      <div
-        class="weather__icon"
-        :style="{ backgroundImage: weatherData.icon }"
-      ></div>
-      <div class="weather__temperature">
-        {{ weatherData.temperature }}&#8451;
-      </div>
+      <div class="weather__icon" :style="{ backgroundImage: weatherData.icon }"></div>
+      <div class="weather__temperature">{{ weatherData.temperature }}&#8451;</div>
     </div>
     <div class="weather__description-text">{{ weatherDescription }}</div>
     <ul class="weather__description-list description">
       <li class="description__item">
         <div class="description__item-icon" v-if="true"></div>
-        <div class="description__item-text">
-          {{ weatherData.windSpeed }} m/s SSE
-        </div>
+        <div class="description__item-text">{{ weatherData.windSpeed }} m/s SSE</div>
       </li>
       <li class="description__item">
         <div class="description__item-icon" v-if="true"></div>
         <div class="description__item-text">{{ weatherData.pressure }}hPA</div>
       </li>
       <li class="description__item">
-        <div class="description__item-text">
-          Humidity: {{ weatherData.humidity }}%
-        </div>
+        <div class="description__item-text">Humidity: {{ weatherData.humidity }}%</div>
       </li>
       <li class="description__item">
         <div class="description__item-text">
@@ -51,8 +42,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
-import { IWeatherGeoResponse, IWeatherCityResponse } from "../types";
+import { computed, defineProps } from "vue";
+import { IWeatherGeoResponse, IWeatherCityResponse } from "@/types";
 
 const props = defineProps<{
   weatherDataResponse: IWeatherCityResponse & IWeatherGeoResponse;
@@ -80,14 +71,12 @@ const weatherDescription = computed(() => {
 const weatherData = computed(() => {
   if (props.weatherDataResponse) {
     return {
-      cityName:
-        props.weatherDataResponse.name || props.weatherDataResponse.city.name,
+      cityName: props.weatherDataResponse.name || props.weatherDataResponse.city.name,
       country:
-        props.weatherDataResponse.sys?.country ||
-        props.weatherDataResponse.city.country,
+        props.weatherDataResponse.sys?.country || props.weatherDataResponse.city.country,
       icon:
-        `url("src/assets/weather-icons/${props.weatherDataResponse.weather?.[0]?.icon}.png")` ||
-        `url("src/assets/weather-icons/${props.weatherDataResponse.list?.[0]?.weather[0].icon}.png")`,
+        `url("/weather-icons/${props.weatherDataResponse.weather?.[0]?.icon}.png")` ||
+        `url("/weather-icons/${props.weatherDataResponse.list?.[0]?.weather[0].icon}.png")`,
       temperature:
         props.weatherDataResponse.main?.temp.toFixed() ||
         props.weatherDataResponse.list?.[0]?.main.temp.toFixed(),
@@ -134,13 +123,14 @@ const weatherData = computed(() => {
   &__city {
     margin-right: 10px;
   }
-  &__settings-icon {
-    background-image: url("../assets/settings-icon.svg");
+  &__settings-button {
+    background-image: url("/settings-icon.svg");
     width: 24px;
     height: 24px;
     background-repeat: no-repeat;
-    cursor: pointer;
     transition: transform linear 0.2s;
+    background-color: transparent;
+    border: none;
     &:hover {
       transform: rotate(90deg);
     }

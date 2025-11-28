@@ -1,22 +1,18 @@
 <template>
-  <div class="weather__settings settings">
+  <div class="settings">
     <div class="settings__head">
       <h2 class="settings__title">Settings</h2>
-      <div
-        class="settings__close-icon close-icon"
-        @click="$emit('clickCloseSettings')"
-      >
-        <span class="close-icon__left"></span
-        ><span class="close-icon__right"></span>
+      <div class="settings__close-icon close-icon" @click="$emit('clickCloseSettings')">
+        <span class="close-icon__left"></span><span class="close-icon__right"></span>
       </div>
     </div>
     <div class="setting__body">
       <div class="settings__elements-list">
         <draggable
-          v-model="citiesArr"
           :animation="200"
-          @change="onDragEnd"
           item-key="cities"
+          v-model="citiesArr"
+          @change="onDragEnd"
         >
           <template #item="{ element: citiesArr }">
             <div class="settings__element element">
@@ -41,25 +37,27 @@
         <div class="add-element__input-wrapper">
           <input
             class="add-element__input"
-            @input="onChange"
             ref="inputElement"
+            @input="onChange"
+            @keypress.enter="addCity"
           />
-          <button class="add-element__button" @click="clickAdd"></button>
+          <button class="add-element__button" @click="addCity"></button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
-import { ICity } from "../types";
+import { defineProps, defineEmits, ref, watchEffect } from "vue";
+import { ICity } from "@/types";
 import draggable from "vuedraggable";
 
 const props = defineProps<{ cities: ICity[] }>();
 const citiesArr = ref([...props.cities]);
 const emit = defineEmits<{
+  clickCloseSettings: [];
   clickDelete: [name: string];
-  clickAdd: [name: string];
+  addCity: [name: string];
   dragEnd: [citiesArr: ICity[]];
 }>();
 
@@ -70,8 +68,8 @@ const onChange = (e: Event) => {
   cityInput.value = target.value;
 };
 
-const clickAdd = () => {
-  emit("clickAdd", cityInput.value);
+const addCity = () => {
+  emit("addCity", cityInput.value);
   cityInput.value = "";
   if (inputElement.value) inputElement.value.value = "";
 };
@@ -91,6 +89,7 @@ watchEffect(async () => {
 
 <style scoped lang="scss">
 .settings {
+  width: 100%;
   &__head {
     display: flex;
     align-items: center;
@@ -135,7 +134,7 @@ watchEffect(async () => {
   &__delete {
     width: 24px;
     height: 24px;
-    background-image: url("../assets/trash-icon.svg");
+    background-image: url("/trash-icon.svg");
     cursor: pointer;
   }
 }
@@ -168,7 +167,7 @@ watchEffect(async () => {
     outline: none;
     border: none;
     background-color: transparent;
-    background-image: url("../assets/enter-icon.svg");
+    background-image: url("/enter-icon.svg");
     background-repeat: no-repeat;
     background-size: contain;
   }
@@ -203,5 +202,6 @@ watchEffect(async () => {
   min-height: 30px;
   padding: 8px;
   background-color: rgb(247, 247, 247);
+  cursor: pointer;
 }
 </style>
