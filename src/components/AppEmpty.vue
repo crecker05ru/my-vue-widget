@@ -1,7 +1,10 @@
 <template>
   <div class="empty">
     <p class="empty__text">City not chosen</p>
-    <button class="empty__settings-button" @click="$emit('clickSettings')"></button>
+    <button
+      class="empty__settings-button"
+      @click="$emit('clickSettings')"
+    ></button>
   </div>
 </template>
 <script setup lang="ts"></script>

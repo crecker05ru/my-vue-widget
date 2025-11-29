@@ -1,6 +1,8 @@
 <template>
   <div class="main">
-    <div class="weather">
+    <div class="main__weather weather">
+      <AppError v-if="error" class="main__error" :error="error" />
+      <AppLoader v-if="isLoading" class="main__loading" />
       <WeatherSettings
         class="weather__settings"
         v-if="isSettingsOpened"
@@ -11,38 +13,44 @@
         @dragEnd="dargEnd"
       />
       <template v-else>
-        <template v-if="weatherData?.length">
-          <ViewWeather
-          v-for="(weatherData, index) in weatherData"
-          :key="index"
-          :isMain="index === 0"
-          :weatherDataResponse="weatherData"
-          @clickSettings="handleSettings"
-        />
+        <template v-if="cities?.length > 0">
+          <CityWeather
+            v-for="(city, index) in cities"
+            :key="city?.cityName"
+            :isMain="index === 0"
+            :weatherDataResponse="city.weatherData"
+            @clickSettings="handleSettings"
+          />
         </template>
-        <ViewEmpty 
-        v-else
-        class="weather__empty"
-        @clickSettings="handleSettings"
+        <AppEmpty
+          v-else
+          class="weather__empty"
+          @clickSettings="handleSettings"
         />
       </template>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted, watchEffect } from "vue";
-import ViewEmpty from "@/components/ViewEmpty.vue";
-import ViewWeather from "@/components/ViewWeather.vue";
+import { ref, reactive, onMounted } from "vue";
+import AppEmpty from "@/components/AppEmpty.vue";
+import CityWeather from "@/components/CityWeather.vue";
 import WeatherSettings from "@/components/WeatherSettings.vue";
-import { ICity, IWeatherGeoResponse } from "@/types";
-import { getWeatherByCity, getWeatherByGeoposition } from "@/api/api";
+import { ICity } from "@/types";
+import AppLoader from "@/components/AppLoader.vue";
+import AppError from "@/components/AppError.vue";
+import { useWeather } from "./composables/useWeather";
+
 const isSettingsOpened = ref(false);
 const geoCoordinates = reactive({
   lat: 51.5085,
   lon: -0.1257,
 });
 const cities = ref<ICity[]>([]);
-const weatherData = ref();
+const { isLoading, error, geopositionInitition } = useWeather(
+  geoCoordinates,
+  cities
+);
 const handleSettings = () => {
   if (isSettingsOpened.value) {
     isSettingsOpened.value = false;
@@ -52,7 +60,7 @@ const handleSettings = () => {
 };
 
 const onAddCity = (name: string) => {
-  cities.value.push({ cityName: name, country: "" });
+  cities.value.push({ cityName: name, country: "", weatherData: null });
 };
 
 const deleteCity = (name: string) => {
@@ -60,41 +68,11 @@ const deleteCity = (name: string) => {
 };
 
 const dargEnd = (citiesArr: ICity[]) => {
+  console.log("citiesArr", citiesArr);
   cities.value = citiesArr;
 };
 onMounted(async () => {
-  const data = localStorage.getItem("data");
-
-  if (data) {
-    cities.value = JSON.parse(data);
-  }
-  if (cities.value && cities.value.length < 1) {
-    navigator.geolocation.getCurrentPosition(async (positions) => {
-      if (positions) {
-        (geoCoordinates.lat = positions.coords.latitude),
-          (geoCoordinates.lon = positions.coords.longitude);
-      }
-      const city = (await getWeatherByGeoposition(geoCoordinates)) as IWeatherGeoResponse;
-      cities.value.push({
-        cityName: city.city.name,
-        country: city.city.country,
-      });
-      weatherData.value.push(city);
-      if (!city) {
-        cities.value.push({ cityName: "London", country: "GB" });
-      }
-    });
-  }
-});
-
-watchEffect(async () => {
-  weatherData.value = await Promise.all(
-    cities.value.map(async (city) => {
-      const weather = await getWeatherByCity(city.cityName);
-      return weather;
-    })
-  );
-  localStorage.setItem("data", JSON.stringify(cities.value));
+  geopositionInitition();
 });
 </script>
 <style scoped lang="scss">

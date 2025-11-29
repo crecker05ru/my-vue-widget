@@ -12,21 +12,30 @@
       ></button>
     </div>
     <div class="weather__visuals">
-      <div class="weather__icon" :style="{ backgroundImage: weatherData.icon }"></div>
-      <div class="weather__temperature">{{ weatherData.temperature }}&#8451;</div>
+      <div
+        class="weather__icon"
+        :style="{ backgroundImage: weatherData.icon }"
+      ></div>
+      <div class="weather__temperature">
+        {{ weatherData.temperature }}&#8451;
+      </div>
     </div>
     <div class="weather__description-text">{{ weatherDescription }}</div>
     <ul class="weather__description-list description">
       <li class="description__item">
         <div class="description__item-icon" v-if="true"></div>
-        <div class="description__item-text">{{ weatherData.windSpeed }} m/s SSE</div>
+        <div class="description__item-text">
+          {{ weatherData.windSpeed }} m/s SSE
+        </div>
       </li>
       <li class="description__item">
         <div class="description__item-icon" v-if="true"></div>
         <div class="description__item-text">{{ weatherData.pressure }}hPA</div>
       </li>
       <li class="description__item">
-        <div class="description__item-text">Humidity: {{ weatherData.humidity }}%</div>
+        <div class="description__item-text">
+          Humidity: {{ weatherData.humidity }}%
+        </div>
       </li>
       <li class="description__item">
         <div class="description__item-text">
@@ -46,12 +55,16 @@ import { computed, defineProps } from "vue";
 import { IWeatherGeoResponse, IWeatherCityResponse } from "@/types";
 
 const props = defineProps<{
-  weatherDataResponse: IWeatherCityResponse & IWeatherGeoResponse;
+  weatherDataResponse:
+    | IWeatherCityResponse
+    | IWeatherGeoResponse
+    | null
+    | undefined;
   isMain: boolean;
 }>();
 
 const weatherDescription = computed(() => {
-  if (props.weatherDataResponse && props.weatherDataResponse.list) {
+  if (props.weatherDataResponse && "list" in props.weatherDataResponse) {
     return `Feels like ${props.weatherDataResponse.list[0].main.feels_like.toFixed()}C.
     ${
       props.weatherDataResponse.list[0].weather[0].description[0].toUpperCase() +
@@ -69,39 +82,39 @@ const weatherDescription = computed(() => {
 });
 
 const weatherData = computed(() => {
-  if (props.weatherDataResponse) {
+  if (props.weatherDataResponse && "list" in props.weatherDataResponse) {
     return {
-      cityName: props.weatherDataResponse.name || props.weatherDataResponse.city.name,
-      country:
-        props.weatherDataResponse.sys?.country || props.weatherDataResponse.city.country,
-      icon:
-        `url("/weather-icons/${props.weatherDataResponse.weather?.[0]?.icon}.png")` ||
-        `url("/weather-icons/${props.weatherDataResponse.list?.[0]?.weather[0].icon}.png")`,
-      temperature:
-        props.weatherDataResponse.main?.temp.toFixed() ||
-        props.weatherDataResponse.list?.[0]?.main.temp.toFixed(),
+      cityName: props.weatherDataResponse.city.name,
+      country: props.weatherDataResponse.city.country,
+      icon: `url("./weather-icons/${props.weatherDataResponse.list?.[0]?.weather[0].icon}.png")`,
+      temperature: props.weatherDataResponse.list?.[0]?.main.temp.toFixed(),
       description: weatherDescription,
-      windSpeed:
-        String(props.weatherDataResponse.wind?.speed) ||
-        props.weatherDataResponse.list?.[0]?.wind.speed,
-      pressure:
-        props.weatherDataResponse.main?.pressure ||
-        props.weatherDataResponse.list?.[0]?.main.pressure,
-      humidity:
-        props.weatherDataResponse.main?.humidity ||
-        props.weatherDataResponse.list?.[0]?.main.humidity,
-      dewPoint:
-        (
-          props.weatherDataResponse.main?.temp *
-          (props.weatherDataResponse.main?.humidity / 100)
-        ).toFixed() ||
-        (
-          props.weatherDataResponse.list?.[0]?.main.temp *
-          (props.weatherDataResponse.list?.[0]?.main.humidity / 100)
-        ).toFixed(),
-      visibility:
-        (props.weatherDataResponse.visibility / 1000).toFixed(1) ||
-        (props.weatherDataResponse.list?.[0]?.visibility / 1000).toFixed(1),
+      windSpeed: props.weatherDataResponse.list?.[0]?.wind.speed,
+      pressure: props.weatherDataResponse.list?.[0]?.main.pressure,
+      humidity: props.weatherDataResponse.list?.[0]?.main.humidity,
+      dewPoint: (
+        props.weatherDataResponse.list?.[0]?.main.temp *
+        (props.weatherDataResponse.list?.[0]?.main.humidity / 100)
+      ).toFixed(),
+      visibility: (
+        props.weatherDataResponse.list?.[0]?.visibility / 1000
+      ).toFixed(1),
+    };
+  } else if (props.weatherDataResponse && "main" in props.weatherDataResponse) {
+    return {
+      cityName: props.weatherDataResponse.name,
+      country: props.weatherDataResponse.sys?.country,
+      icon: `url("./weather-icons/${props.weatherDataResponse.weather?.[0]?.icon}.png")`,
+      temperature: props.weatherDataResponse.main?.temp.toFixed(),
+      description: weatherDescription,
+      windSpeed: String(props.weatherDataResponse.wind?.speed),
+      pressure: props.weatherDataResponse.main?.pressure,
+      humidity: props.weatherDataResponse.main?.humidity,
+      dewPoint: (
+        props.weatherDataResponse.main?.temp *
+        (props.weatherDataResponse.main?.humidity / 100)
+      ).toFixed(),
+      visibility: (props.weatherDataResponse.visibility / 1000).toFixed(1),
     };
   }
   return null;

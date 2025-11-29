@@ -2,8 +2,12 @@
   <div class="settings">
     <div class="settings__head">
       <h2 class="settings__title">Settings</h2>
-      <div class="settings__close-icon close-icon" @click="$emit('clickCloseSettings')">
-        <span class="close-icon__left"></span><span class="close-icon__right"></span>
+      <div
+        class="settings__close-icon close-icon"
+        @click="$emit('clickCloseSettings')"
+      >
+        <span class="close-icon__left"></span
+        ><span class="close-icon__right"></span>
       </div>
     </div>
     <div class="setting__body">
