@@ -17,7 +17,7 @@ export const getWeatherByCity = async (city: string) => {
     const data = await res.json();
     return data;
   } catch (e) {
-    console.log("error", e);
+    console.error("error", e);
   }
 };
 
@@ -28,7 +28,7 @@ export const getWeatherByGeoposition = async ({ lat, lon }: IGeo) => {
     const data = await res.json();
     return data;
   } catch (e) {
-    console.log("error", e);
+    console.error("error", e);
   }
 };
 
@@ -39,6 +39,6 @@ export const reverseGeocoding = async ({ lat, lon }: IGeo) => {
     const data = await res.json();
     return data;
   } catch (e) {
-    console.log("error", e);
+    console.error("error", e);
   }
 };

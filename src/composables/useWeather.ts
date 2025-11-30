@@ -19,7 +19,13 @@ export function useWeather(geoCoordinates: IGeo, cities: Ref<ICity[]>) {
   const geopositionInitition = async () => {
     error.value = null;
     isLoading.value = true;
-    const data = localStorage.getItem("data");
+    let data
+    
+    try {
+       data = localStorage.getItem("data");
+    } catch(e) {
+      console.error(e)
+    }
 
     if (data) {
       cities.value = JSON.parse(data);
@@ -75,8 +81,12 @@ export function useWeather(geoCoordinates: IGeo, cities: Ref<ICity[]>) {
     )
       .catch((e) => (error.value = e))
       .finally(() => (isLoading.value = false));
-    localStorage.setItem("data", JSON.stringify(cities.value));
-    console.log("weatherData.value", weatherData.value);
+
+    try {
+      localStorage.setItem("data", JSON.stringify(cities.value));
+    } catch(e) {
+      console.error(e)
+    }
   };
 
   watch(

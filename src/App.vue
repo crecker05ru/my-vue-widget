@@ -68,7 +68,6 @@ const deleteCity = (name: string) => {
 };
 
 const dargEnd = (citiesArr: ICity[]) => {
-  console.log("citiesArr", citiesArr);
   cities.value = citiesArr;
 };
 onMounted(async () => {
