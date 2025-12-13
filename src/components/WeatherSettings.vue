@@ -52,7 +52,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watchEffect } from "vue";
+import { ref, watchEffect } from "vue";
 import { ICity } from "@/types";
 import draggable from "vuedraggable";
 

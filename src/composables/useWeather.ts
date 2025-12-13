@@ -33,8 +33,8 @@ export function useWeather(geoCoordinates: IGeo, cities: Ref<ICity[]>) {
     if (cities.value && cities.value.length < 1) {
       navigator.geolocation.getCurrentPosition(async (positions) => {
         if (positions) {
-          (geoCoordinates.lat = positions.coords.latitude),
-            (geoCoordinates.lon = positions.coords.longitude);
+          geoCoordinates.lat = positions.coords.latitude
+          geoCoordinates.lon = positions.coords.longitude;
         } else {
           isLoading.value = false;
           error.value = "Provide coordinates to initiate your city weather";
